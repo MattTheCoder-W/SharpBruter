@@ -16,22 +16,6 @@ namespace ShrapBruter
 
     class Program
     {
-        static void Message(String text, String end = "\n", String type = "info"){
-            String prefix = "";
-            switch(type){
-                case "info":
-                    prefix = ">>>";
-                break;
-                case "error":
-                    prefix = "!!!";
-                break;
-                default:
-                    prefix = ">>>";
-                break;
-            }
-            Console.Write($"{prefix} {text}" + end);
-        }
-
         private static readonly HttpClient client = new HttpClient();
 
         static async Task SharePost(string login, string pass, string[] headers, string address, bool verbose = false)
@@ -190,7 +174,7 @@ namespace ShrapBruter
             try{
                 passes = File.ReadAllLines(arguments[1].ToString());
             } catch(System.IO.FileNotFoundException){
-                Message("Given dictionary does not exist!", type: "error");
+                Messages.Message("Given dictionary does not exist!", type: "error");
                 Environment.Exit(0);
             }
             bool verbose = (bool)arguments[2];
@@ -198,21 +182,26 @@ namespace ShrapBruter
             String[] headers = {arr[0], arr[1]};
             String url = arguments[4].ToString();
 
+            Messages.Message("Starting");
+
             DateTime strtTime = GetTime();
             for(int i = 0; i < passes.Length; i++){
                 if(i % 1000 == 0 && verbose){ 
                     double[] elapsed = CurrentProgress(i, passes.Length, strtTime);
                     TimeSpan done = TimeSpan.FromSeconds(elapsed[0]);
                     TimeSpan remain = TimeSpan.FromSeconds(elapsed[1]);
-                    Console.WriteLine($"{Math.Round((i+1.0f)/passes.Length*100.0f, 2)}%\t [ATTEMPT: {i+1}]\t Login: {login}\t Current Password: {passes[i]} [ELAPSED: {done.Hours}:{done.Minutes}:{done.Seconds}] [REMAINING: {remain.Hours}:{remain.Minutes}:{remain.Seconds}]");
+                    Console.Write($"{Math.Round((i+1.0f)/passes.Length*100.0f, 2)}%\t [ATTEMPT: {i+1}]\t Login: "); Messages.PrintColored(login, "yellow", end: "");
+                    Console.Write($"\t Password: "); Messages.PrintColored(passes[i], "yellow", end: "");
+                    Console.Write($"\t\t[ELAPSED: {done.Hours}:{done.Minutes}:{done.Seconds}] [REMAINING: {remain.Hours}:{remain.Minutes}:{remain.Seconds}]\n");
                 }
                 await SharePost(login, passes[i], headers, url);
                 if(Globals.cracked){
-                    Message("Password cracked: " + passes[i]);
+                    Messages.Message("Password cracked: ", end: "");
+                    Messages.PrintColored(passes[i], "green");
                     break;
                 }
             }
-            Message("Thanks For Using This App!");
+            Messages.Message("Thanks For Using This App!");
         }
     }
 }
