@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace ShrapBruter{
     public class Arguments{
-        public static Object[] Args(String[] argss){
+        public static Object[] Args(string[] argss){
 
-            String[] args = argss;
+            string[] args = argss;
 
             string[] KNOWN = new string[] {"/u", "/l", "/p", "/v", "/headers"};
             string usage = "SharpBrute.exe /u URL /l LOGIN /p PASS_FILE [/v] [/headers HEADERS]";
@@ -34,13 +34,13 @@ namespace ShrapBruter{
             if(args.Length > 0){
                 if(args.Contains("/h") || args.Contains("/help")) HelpPage();
 
-                String url = "", login = "", passfile = "";
-                String[] headers = new String[] {"", ""};
+                string url = "", login = "", passfile = "";
+                string[] headers = new string[] {"", ""};
                 bool verbose = false;
 
                 int i = 0;
                 while(i < args.Length){
-                    String arg = args[i];
+                    string arg = args[i];
                     if(!KNOWN.Contains(arg)) { Console.WriteLine("Unknown argumen: " + arg); Environment.Exit(0); }
 
                     try{
@@ -69,7 +69,7 @@ namespace ShrapBruter{
                                 i++;
                             break;
                             case "/headers":
-                                String subheaders = args[i+1];
+                                string subheaders = args[i+1];
                                 if(KNOWN.Contains(subheaders)) throw new Exception();
                                 headers = subheaders.Split(",");
                                 i += 2;
