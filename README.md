@@ -14,6 +14,10 @@
 
 <br/>
 
+### WINDOWS is not supported (might be fixed in future)!!!
+
+<br/>
+
 ## Requirements:
 
 * Mono (or other software for running .exe c# files)
@@ -64,6 +68,5 @@ Argument | Description
 
 ## Tested on:
 
-* Windows 10
 * Linux 20.04
 * Linux 18
