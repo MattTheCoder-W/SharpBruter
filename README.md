@@ -10,7 +10,7 @@
 
 <br/>
 
-![UsageGif](https://i.ibb.co/YDpHc0t/output2.gif)
+![UsageGif](https://i.ibb.co/PNxWKNq/output.gif)
 
 <br/>
 
