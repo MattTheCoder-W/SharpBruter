@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 
+// Author: MattTheCoder-W
+
 namespace Bruter
 {
     class Globals{
