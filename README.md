@@ -14,7 +14,9 @@
 
 <br/>
 
-### WINDOWS is not supported (might be fixed in future)!!!
+### WARNING:
+
+On **Windows** systems you have to use `mono`, due to some script error which will be fixed in the future.
 
 <br/>
 
