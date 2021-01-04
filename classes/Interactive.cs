@@ -5,7 +5,8 @@ namespace ShrapBruter{
         public Interactive(){}
 
         String Question(String text, bool noempty = true, String mustcontain = ""){
-            Console.Write($">>> {text}: ");
+            Messages.PrintColored(">>> ", "blue", end: "");
+            Console.Write($"{text}: ");
             String answ = Console.ReadLine();
             if(noempty && answ.Length == 0){
                 Console.WriteLine("Please specify value!");
@@ -21,7 +22,8 @@ namespace ShrapBruter{
         }
 
         bool YesNo(String text){
-            Console.Write($">>> {text} [y/n]: ");
+            Messages.PrintColored(">>> ", "blue", end: "");
+            Console.Write($"{text} [y/n]: ");
             String inpt = Console.ReadLine();
             bool answ;
             switch(inpt){
