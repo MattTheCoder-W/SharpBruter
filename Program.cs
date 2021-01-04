@@ -174,8 +174,6 @@ namespace ShrapBruter
                 return new double[] {elapsedTime, estimatedRemaining};
             }
 
-            Console.WriteLine("Start");
-
             bool interactive = CheckInteractive(args, "/i");
             Object[] arguments;
 
