@@ -1,7 +1,7 @@
 using System;
 
 namespace ShrapBruter{
-    class Interactive{
+    public class Interactive{
         public Interactive(){}
 
         String Question(String text, bool noempty = true, String mustcontain = ""){
