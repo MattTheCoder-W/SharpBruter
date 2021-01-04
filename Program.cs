@@ -196,13 +196,9 @@ namespace ShrapBruter
                 Environment.Exit(0);
             }
             bool verbose = (bool)arguments[2];
-
             string[] arr = ((IEnumerable)arguments[3]).Cast<object>().Select(x => x.ToString()).ToArray();
             String[] headers = {arr[0], arr[1]};
-
             String url = arguments[4].ToString();
-
-            Message("Starting");
 
             DateTime strtTime = GetTime();
             for(int i = 0; i < passes.Length; i++){
