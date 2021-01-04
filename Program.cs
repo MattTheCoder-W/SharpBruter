@@ -8,7 +8,7 @@ using System.Net.Http;
 
 // Author: MattTheCoder-W
 
-namespace Bruter
+namespace ShrapBruter
 {
     class Globals{
         public static bool cracked = false;
@@ -34,7 +34,7 @@ namespace Bruter
 
         private static readonly HttpClient client = new HttpClient();
 
-        static async Task SharePost(string login, string pass, string[] headers, bool verbose = false)
+        static async Task SharePost(string login, string pass, string[] headers, string address, bool verbose = false)
         {
             var values = new Dictionary<string, string>
             {
@@ -43,7 +43,7 @@ namespace Bruter
             };
 
             var content = new FormUrlEncodedContent(values);
-            var response = await client.PostAsync("http://192.168.0.101/PHP/Form/login.php", content);
+            var response = await client.PostAsync(address, content);
             string responseString = response.Content.ReadAsStringAsync().Result;
 
             if(verbose){ 
@@ -58,12 +58,14 @@ namespace Bruter
 
         static Object[] Arguments(string[] args){
 
-            string[] KNOWN = new string[] {"/l", "/p", "/v", "/headers"};
+            string[] KNOWN = new string[] {"/u", "/l", "/p", "/v", "/headers"};
+            string usage = "SharpBrute.exe /u URL /l LOGIN /p PASS_FILE [/v] [/headers HEADERS]";
 
             void HelpPage(){
                 Console.WriteLine("Usage:\n" +
-                                "SharpBrute.exe /l LOGIN /p PASS_FILE [/v] [/headers HEADERS]\n" +
+                                $"{usage}\n" +
                                 "Arguments:\n" +
+                                "\t/u\t\tForm URL address\n" +
                                 "\t/l\t\tLogin for brute forcing.\n" +
                                 "\t/p\t\tDictionary with possible passwords.\n" +
                                 "\t/v\t\tVerbose mode of this program.\n" +
@@ -75,7 +77,7 @@ namespace Bruter
             }
 
             void UsagePage(){
-                Console.WriteLine("Usage: SharpBrute.exe /l LOGIN /p PASS_FILE [/v] [/headers HEADERS]\n" +
+                Console.WriteLine($"Usage: {usage}\n" +
                                 "Use /h or /help for more help.");
                 Environment.Exit(0);
             }
@@ -83,7 +85,7 @@ namespace Bruter
             if(args.Length > 0){
                 if(args.Contains("/h") || args.Contains("/help")) HelpPage();
 
-                String login = "", passfile = "";
+                String url = "", login = "", passfile = "";
                 String[] headers = new String[] {"", ""};
                 bool verbose = false;
 
@@ -94,6 +96,15 @@ namespace Bruter
 
                     try{
                         switch(arg){
+                            case "/u":
+                                url = args[i+1];
+                                if(KNOWN.Contains(url)) throw new Exception();
+                                if(!url.Contains("http")){
+                                    Console.WriteLine($"'{url}' is not valid URL! (Don't forget about http/https)");
+                                    Environment.Exit(0);
+                                }
+                                i += 2;
+                            break;
                             case "/l":
                                 login = args[i+1];
                                 if(KNOWN.Contains(login)) throw new Exception();
@@ -125,15 +136,24 @@ namespace Bruter
                         UsagePage();
                     }
                 }
-                if(login == "" || passfile == "" || headers[0] == "" || headers[1] == ""){
+                if(login == "" || passfile == "" || headers[0] == "" || headers[1] == "" || url == ""){
                     Console.WriteLine("Please specify all values!");
                     UsagePage();
                 }
                 // Console.WriteLine($"{login}, {passfile}, {verbose}, [{string.Join(", ", headers)}]"); 
-                return new Object[] {login, passfile, verbose, headers};
+                return new Object[] {login, passfile, verbose, headers, url};
             }
             else UsagePage();
             return new Object[] {null};
+        }
+
+        static bool CheckInteractive(string[] args, string key){
+            if(args.Contains(key)){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
 
         static async Task Main(string[] args)
@@ -154,7 +174,18 @@ namespace Bruter
                 return new double[] {elapsedTime, estimatedRemaining};
             }
 
-            Object[] arguments= Arguments(args);
+            Console.WriteLine("Start");
+
+            bool interactive = CheckInteractive(args, "/i");
+            Object[] arguments;
+
+            if(interactive){
+                Interactive inter = new Interactive();
+                arguments = inter.GetArguments();
+            }
+            else{
+                arguments = Arguments(args);
+            }
 
             String login = arguments[0].ToString();  
             String[] passes = new String[] {""};
@@ -165,11 +196,9 @@ namespace Bruter
                 Environment.Exit(0);
             }
             bool verbose = (bool)arguments[2];
-
             string[] arr = ((IEnumerable)arguments[3]).Cast<object>().Select(x => x.ToString()).ToArray();
             String[] headers = {arr[0], arr[1]};
-
-            Message("Starting");
+            String url = arguments[4].ToString();
 
             DateTime strtTime = GetTime();
             for(int i = 0; i < passes.Length; i++){
@@ -179,7 +208,7 @@ namespace Bruter
                     TimeSpan remain = TimeSpan.FromSeconds(elapsed[1]);
                     Console.WriteLine($"{Math.Round((i+1.0f)/passes.Length*100.0f, 2)}%\t [ATTEMPT: {i+1}]\t Login: {login}\t Current Password: {passes[i]} [ELAPSED: {done.Hours}:{done.Minutes}:{done.Seconds}] [REMAINING: {remain.Hours}:{remain.Minutes}:{remain.Seconds}]");
                 }
-                await SharePost(login, passes[i], headers);
+                await SharePost(login, passes[i], headers, url);
                 if(Globals.cracked){
                     Message("Password cracked: " + passes[i]);
                     break;
